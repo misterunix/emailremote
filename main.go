@@ -72,6 +72,7 @@ func main() {
 
 		fmt.Println("sc size", len(sc))
 
+		// check for # of works on the subject line
 		if len(sc) < 2 {
 			continue
 		}
@@ -81,6 +82,7 @@ func main() {
 		sc[1] = strings.TrimSpace(sc[1])
 		if strings.Compare(sc[0], "PING") == 0 {
 			if !checkIPAddress(sc[1]) {
+				ReturnEmail(c.From, s, "FQHN not supported at this time.")
 				continue
 			}
 			ss, err := RunExecutable(1, sc[1])
@@ -93,6 +95,7 @@ func main() {
 
 		if strings.Compare(sc[0], "TRACE") == 0 {
 			if !checkIPAddress(sc[1]) {
+				ReturnEmail(c.From, s, "FQHN not supported at this time.")
 				continue
 			}
 			ss, err := RunExecutable(2, sc[1])
@@ -105,6 +108,7 @@ func main() {
 
 		if strings.Compare(sc[0], "MTR") == 0 {
 			if !checkIPAddress(sc[1]) {
+				ReturnEmail(c.From, s, "FQHN not supported at this time.")
 				continue
 			}
 			ss, err := RunExecutable(3, sc[1])
@@ -119,6 +123,7 @@ func main() {
 
 }
 
+// buildHomePath : expand ~/ to full home path
 func buildHomePath(path string) string {
 	home := os.Getenv("HOME")
 	// expand tilde
@@ -129,6 +134,7 @@ func buildHomePath(path string) string {
 	return path
 }
 
+// RunExecutable : Runs the selected command and returns the result
 func RunExecutable(cmd int, parameter string) (string, error) {
 	var c *exec.Cmd
 
@@ -180,10 +186,12 @@ func RunExecutable(cmd int, parameter string) (string, error) {
 		}
 		return "",nil
 	*/
-	fmt.Println("Command returned", len(rawdata), "bytes")
+
+	// fmt.Println("Command returned", len(rawdata), "bytes")
 	return string(rawdata), nil
 }
 
+// ReturnEmail : Send the results from the commands to the sender.
 func ReturnEmail(returnemail string, subject string, message string) error {
 	fmt.Println("Return Email")
 	fmt.Println(returnemail)
@@ -217,14 +225,17 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
+// Connect to email and retreive the emails and store them to be processed.
 func popit() {
 
+	// gmail is hard coded at this time.
 	p := pop3.New(pop3.Opt{
 		Host:       "pop.gmail.com",
 		Port:       995,
 		TLSEnabled: true,
 	})
 
+	// Create a new pop3
 	c, err := p.NewConn()
 	if err != nil {
 		log.Fatal(err)
@@ -236,15 +247,17 @@ func popit() {
 		log.Fatal(err)
 	}
 
-	// Print the total number of messages and their size.
-	count, size, _ := c.Stat()
-	fmt.Println("total messages=", count, "size=", size)
+	// count : The number of messages
+	count, _, _ := c.Stat()
+	//fmt.Println("total messages=", count, "size=", size)
 
+	/* used during debuging
 	// Pull the list of all message IDs and their sizes.
 	msgs, _ := c.List(0)
 	for _, m := range msgs {
 		fmt.Println("id=", m.ID, "size=", m.Size)
 	}
+	*/
 
 	// Pull all messages on the server. Message IDs go from 1 to N.
 	for id := 1; id <= count; id++ {
@@ -256,29 +269,12 @@ func popit() {
 			continue
 		}
 
-		//fmt.Println(id, "=", m.Header.Get("From"))
-		//fmt.Println(id, "=", m.Header.Get("Subject"))
+		// The body of the email is not needed
 
-		/*
-			var b = make([]byte, 16384)
-
-			n, err := m.Body.Read(b)
-			if err != nil {
-				log.Fatal(err)
-			}
-			if n == 0 {
-				continue
-			}
-
-			body := b[:n]
-
-			fmt.Println(string(body))
-		*/
-
-		cc := Commands{}
-		cc.From = from
-		cc.Subject = subject
-		commands = append(commands, cc)
+		cc := Commands{}                // cc : New tempory Commands struct
+		cc.From = from                  // Set the from
+		cc.Subject = subject            // Set the subject
+		commands = append(commands, cc) // Add from and subject into the command slice
 
 	}
 
@@ -287,9 +283,9 @@ func popit() {
 	//c.Dele(id)
 	//}
 
-	for k, j := range commands {
-		fmt.Println(k, j)
-	}
+	//	for k, j := range commands {
+	//		fmt.Println(k, j)
+	//	}
 
 }
 
