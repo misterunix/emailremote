@@ -134,7 +134,7 @@ func RunExecutable(cmd int, parameter string) (string, error) {
 
 	switch cmd {
 	case 1: // ping IP
-		c = exec.Command("ping", "-c", "5", parameter)
+		c = exec.Command("ping", "-c", "10", parameter)
 	case 2: // traceroute IP
 		c = exec.Command("traceroute", parameter)
 	case 3:
