@@ -3,6 +3,7 @@ module emailremote
 go 1.17
 
 require (
+	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
 	github.com/knadh/go-pop3 v0.2.0
 	github.com/misterunix/sniffle v1.0.1
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df

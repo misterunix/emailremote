@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/knadh/go-pop3"
 	"github.com/misterunix/sniffle/jsonio"
 	"gopkg.in/gomail.v2"
@@ -292,6 +293,9 @@ func popit() {
 // checkIPAddress : Check to see if an IP address is valid. Returns true if valid, false if not.
 func checkIPAddress(ip string) bool {
 	if net.ParseIP(ip) == nil {
+		if govalidator.IsDNSName(ip) {
+			return true
+		}
 		return false
 	} else {
 		return true
