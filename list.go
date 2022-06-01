@@ -16,8 +16,10 @@ Commands
     -   Returns this README
 -   PING
     -   Ping remote host. ipv4 or ipv6
--   TRACE
-    -   Traceroute to remote host. ipv4 or ipv6
+-   TRACE-U
+    -   Traceroute to remote host using udp. ipv4 or ipv6
+-   TRACE-I
+    -   Traceroute to remote host using icmp. ipv4 or ipv6		
 -   MTR
     -   MTR -c 10 -r
 -   RVIEWS

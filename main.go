@@ -94,12 +94,25 @@ func main() {
 
 		}
 
-		if strings.Compare(sc[0], "TRACE") == 0 {
+		if strings.Compare(sc[0], "TRACE-U") == 0 {
 			if !checkIPAddress(sc[1]) {
 				ReturnEmail(c.From, s, "FQHN not supported at this time.")
 				continue
 			}
 			ss, err := RunExecutable(2, sc[1])
+			if err != nil {
+				continue
+			}
+			ReturnEmail(c.From, s, ss)
+
+		}
+
+		if strings.Compare(sc[0], "TRACE-I") == 0 {
+			if !checkIPAddress(sc[1]) {
+				ReturnEmail(c.From, s, "FQHN not supported at this time.")
+				continue
+			}
+			ss, err := RunExecutable(4, sc[1])
 			if err != nil {
 				continue
 			}
@@ -146,6 +159,9 @@ func RunExecutable(cmd int, parameter string) (string, error) {
 		c = exec.Command("traceroute", parameter)
 	case 3:
 		c = exec.Command("mtr", "-c", "10", "-r", parameter)
+	case 4: // traceroute IP
+		c = exec.Command("traceroute", "-I", parameter)
+
 	default:
 		return "", errors.New("o command given or recognized")
 	}
